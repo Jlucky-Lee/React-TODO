@@ -1,7 +1,16 @@
-import {createStore} from 'redux'
+import {createStore,compose,applyMiddleware} from 'redux'
 import reducer from './reducer'
-const store = createStore(
-    reducer,
-    window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__() //这句话的意思是如果有redux的调试工具则在里面进行调试
-);
+// import thunk from 'redux-thunk';
+import createSagaMiddleware  from 'redux-saga'
+import mySage from './sagas'
+ 
+const sagaMiddleware = createSagaMiddleware()
+
+const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+const store = createStore(reducer, composeEnhancers(
+    applyMiddleware(sagaMiddleware)
+));
+
+sagaMiddleware.run(mySage)
+
 export default  store

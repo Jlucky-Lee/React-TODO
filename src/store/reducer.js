@@ -1,12 +1,7 @@
-import {CHANGE_INPUT_VALUE,ADD_TODO_ITEM,DELETE_TODO_ITEM} from './actions'
+import {CHANGE_INPUT_VALUE,ADD_TODO_ITEM,DELETE_TODO_ITEM,INIT_TODO_LIST} from './actions'
 const defaultState = {
-    inputValue:'123',
-    list: [
-    'Racing car sprays burning fuel into crowd.',
-    'Japanese princess to wed commoner.',
-    'Australian walks 100km after outback crash.',
-    'Man charged over missing wedding girl.',
-    'Los Angeles battles huge wildfires.',]
+    inputValue:'',
+    list: []
 }
 
 export default (state = defaultState, action) =>{
@@ -29,6 +24,14 @@ switch(action.type){
     case DELETE_TODO_ITEM:
     var newState =JSON.parse(JSON.stringify(state)); //对state进行深拷贝
     newState.list.splice(action.index,1);
+    return newState;
+
+    case INIT_TODO_LIST:   
+    var newState =JSON.parse(JSON.stringify(state)); //对state进行深拷贝
+    console.log(action,'haha');
+    
+    newState.list = action.list;
+
     return newState;
 
 

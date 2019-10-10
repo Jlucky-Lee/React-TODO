@@ -1,9 +1,9 @@
 import React, { Component } from 'react'
-import { Input,List,Button } from 'antd';
+
 import store from '../store'
-import {CHANGE_INPUT_VALUE,ADD_TODO_ITEM,DELETE_TODO_ITEM} from '../store/actions'
 
-
+import TODOUI from '../views/TODO'
+import {getDelItem ,getAddItem,getChangeValue,initLists} from '../store/actionCreate'
 export default class TODO extends Component {
    constructor(props){
        super(props)
@@ -12,34 +12,26 @@ export default class TODO extends Component {
       
        this.changeHandler=this.changeHandler.bind(this)
        this.keyUpHandler=this.keyUpHandler.bind(this)
-       this.clickHandler=this.clickHandler.bind(this)
+       this.addHandler=this.addHandler.bind(this)
        this.storeHandler=this.storeHandler.bind(this)
+       this.delHandler=this.delHandler.bind(this)
        store.subscribe(this.storeHandler) 
    }
    //输入框的内容改变时
    changeHandler(event){
-    // 创建需要借书的名单
-    var action ={
-        type : CHANGE_INPUT_VALUE,
-        value : event.target.value
-    }
-    // 把需要借的书告诉给管理员
-    // store.dispatch('action', payload)
+    let action = getChangeValue(event.target.value);
     store.dispatch(action)
    }
    keyUpHandler(event){
     let code = event.keyCode
     if(code === 13){
-        this.clickHandler()
+        this.addHandler()
     }
 
    }
 //    当点击了添加按钮即可添加一个TODO item
-   clickHandler(){
-    console.log(this.state.inputValue);
-    let action={
-        type:ADD_TODO_ITEM
-    }
+    addHandler(){
+    let action =getAddItem();
     store.dispatch(action)
    }
 
@@ -51,37 +43,26 @@ export default class TODO extends Component {
     //点击删除时删除所选项
     delHandler(index){
         console.log(index);
-        let action={
-            type:DELETE_TODO_ITEM,
-            index
-        }
+        let action =getDelItem(index);
         store.dispatch(action)
     }
-        render() {
-        console.log('store',store.getState());
-        console.log(this.state);
+    render() {
+    return (
         
-        return (
-            <div style={{position: "fixed",
-                         width:500,
-                         left:"50%",
-                         top: "50%",
-                         transform: "translate3d(-50%, -50%, 0)"}}>
-                 <Input value={this.state.inputValue}
-                        style={{display:"inline-block",width:"85%"}}
-                        onChange={this.changeHandler}
-                        onKeyUp={this.keyUpHandler}
-                        />
-                 <Button type="primary" onClick={this.clickHandler}>添加</Button>
-                <List
-                    size="large"
-                    bordered
-                    dataSource={this.state.list}
-                    renderItem={(item,index) => <List.Item extra={
-                            <Button type="danger" style={{float:"right"}} onClick={this.delHandler.bind(this,index)}>&times;</Button>
-                    }>{item}</List.Item>}
+        <TODOUI 
+                inputValue = {this.state.inputValue}
+                list={this.state.list}
+                keyUpHandler={this.keyUpHandler}
+                changeHandler={this.changeHandler}
+                delHandler={this.delHandler}
+                addHandler={this.addHandler}
                 />
-            </div>
-        )
+        
+    )
     }
+
+   componentDidMount(){ 
+      const action = initLists();
+      store.dispatch(action);
+   }
 }
